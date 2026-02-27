@@ -5,6 +5,7 @@ import os
 import urllib.parse
 
 import httpx
+from tqdm import tqdm
 
 from url_type import (
     A, Q, B, W,
@@ -36,7 +37,7 @@ async def download_to_bak(sem:asyncio.Semaphore, client:httpx.AsyncClient, url, 
         return
     os.makedirs(f'user_backups/{usr_dir}/notes_data/', exist_ok=True)
     async with sem:
-        print("downloading", key)
+        # print("downloading", key)
         r = await client.get(url, follow_redirects=True)
         r.raise_for_status()
         with open(path, 'wb') as f:
@@ -198,7 +199,12 @@ async def download_notes_data(client, jid, notes):
             else:
                 assert False, url
     
-    await asyncio.gather(*cors)
+    if cors:
+        with tqdm(total=len(cors), desc="Downloading") as pbar:
+            for f in asyncio.as_completed(cors):
+                await f
+                pbar.update(1)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
