@@ -184,6 +184,8 @@ async def download_notes_data(client, jid, notes):
             elif url == "http://huaba-operate.oss-cn-hangzhou.aliyuncs.com/deletepic.png":
                 pass
             elif urltype == W:
+                if url_name == "noteossurl":
+                    continue
                 if "notecontent" in url:
                     newurl = 'http://[TODOTODO]:5000/' + url.split("notecontent.oss-cn-hangzhou.aliyuncs.com/")[1] # TODO
                     cors.append(
