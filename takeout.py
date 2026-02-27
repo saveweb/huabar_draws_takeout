@@ -164,7 +164,7 @@ async def download_notes_data(client, jid, notes):
     for note in notes:
         noteossurl   = note["payload"]["noteossurl"]
         original_url = note["payload"]["original_url"]
-        for url in [noteossurl, original_url]:
+        for url_name, url in [("noteossurl", noteossurl), ("original_url", original_url)]:
             if not url:
                 continue
             urltype = get_urltype(url)
