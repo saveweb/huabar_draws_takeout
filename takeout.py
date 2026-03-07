@@ -137,16 +137,16 @@ jid: {jid}
             noteid       = note["payload"]["noteid"]
             noteossurl   = note["payload"]["noteossurl"]
             original_url = note["payload"]["original_url"]
-            notename     = note["payload"]["notename"]
+            notename     = note["payload"].get("notename", "")
             notestatus   = note["payload"]["notestatus"]
-            notebrief   = note["payload"]["notebrief"]
+            notebrief   = note["payload"].get("notebrief", "")
             notetime     = note["payload"]["notetime"]
-            strokecount = note["payload"]["strokecount"] # 画笔数
-            width = note["payload"]["width"]
-            high = note["payload"]["high"]
-            usedcbnum = note["payload"]["usedcbnum"] # 含 X 款自定义笔刷
-            praise = note["payload"]["praise"] # 收到的投花数
-            comnum = note["payload"]["comnum"] # 评论数
+            strokecount = note["payload"].get("strokecount", 0) # 画笔数
+            width = note["payload"].get("width", 0)
+            high = note["payload"].get("high", 0)
+            usedcbnum = note["payload"].get("usedcbnum", 0) # 含 X 款自定义笔刷
+            praise = note["payload"].get("praise", 0) # 收到的投花数
+            comnum = note["payload"].get("comnum", 0) # 评论数
             f.write(f"""\
 ---
 
