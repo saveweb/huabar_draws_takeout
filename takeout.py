@@ -1,5 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
+import filetype
+import glob as glob_mod
 import json
 import os
 import urllib.parse
@@ -23,6 +25,20 @@ def get_key(url: str)->str:
     parsed = urllib.parse.urlparse(url)
     return parsed.path.lstrip("/").replace("haowanlab/", "")
 
+def detect_image_ext(file_path: str) -> str | None:
+    """检测文件类型，如果是图片则返回扩展名（如 '.jpg'），否则返回 None。"""
+    kind = filetype.guess(file_path)
+    if kind and kind.mime.startswith("image/"):
+        return f".{kind.extension}"
+    return None
+
+def find_existing_file(path: str) -> str | None:
+    """查找 path 或 path.* 是否已存在，返回找到的路径或 None。"""
+    if os.path.exists(path):
+        return path
+    matches = glob_mod.glob(path + ".*")
+    return matches[0] if matches else None
+
 def write_user_bak_meta(jid: str, notes: list[dict]):
     usr_dir = jid.split('@')[0]
     os.makedirs(f'user_backups/{usr_dir}', exist_ok=True)
@@ -33,15 +49,17 @@ def write_user_bak_meta(jid: str, notes: list[dict]):
 async def download_to_bak(sem:asyncio.Semaphore, client:httpx.AsyncClient, url, jid, key):
     usr_dir = jid.split('@')[0]
     path = f'user_backups/{usr_dir}/notes_data/{key}'
-    if os.path.exists(path):
+    if find_existing_file(path):
         return
     os.makedirs(f'user_backups/{usr_dir}/notes_data/', exist_ok=True)
     async with sem:
-        # print("downloading", key)
         r = await client.get(url, follow_redirects=True)
         r.raise_for_status()
         with open(path, 'wb') as f:
             f.write(r.content)
+        ext = detect_image_ext(path)
+        if ext:
+            os.rename(path, path + ext)
 
 async def get_zipname(client:httpx.AsyncClient, key:str):
     # qiniu-draw-20240127-072800.3565.zip
@@ -149,7 +167,9 @@ jid: {jid}
             f.write("原图: ")
             if is_keyable(original_url):
                 key = get_key(original_url)
-                f.write(f"![{key}](notes_data/{key})"+'{loading="lazy"}\n\n')
+                actual = find_existing_file(f'user_backups/{usr_dir}/notes_data/{key}')
+                display_name = os.path.basename(actual) if actual else key
+                f.write(f"![{key}](notes_data/{display_name})"+'{loading="lazy"}\n\n')
             else:
                 f.write(f"不可用 ({original_url})\n\n")
             f.write("原始工程文件: \n")
