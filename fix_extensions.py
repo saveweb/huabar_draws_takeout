@@ -40,7 +40,11 @@ def fix_user(usr_dir: str):
          "--output", f"user_backups/{usr_dir}/notes.html"],
         check=True,
     )
-    print(f"  regenerated notes.md and notes.html")
+    # repack zip
+    if os.path.exists(f'user_backups/{usr_dir}.zip'):
+        os.unlink(f'user_backups/{usr_dir}.zip')
+    subprocess.run(['zip', '-r', f'user_backups/{usr_dir}.zip', f'user_backups/{usr_dir}'], check=True)
+    print(f"  regenerated notes.md, notes.html and zip")
 
 
 def main():
