@@ -18,10 +18,13 @@ services:
       - "127.0.0.63:8501:8501"
     volumes:
       - .:/app
-      - ./.venv:/app/.venv
+      - uv-cache:/root/.cache/uv
     environment:
       - API_BASE=http://draws_index:8080/api/
-    command: sh -c "apk add --no-cache pandoc zip && uv run streamlit run app.py --server.address=0.0.0.0"
+    command: sh -c "apk add --no-cache pandoc zip && uv run streamlit run app.py --server.address=0.0.0.0 --server.baseUrlPath=/ui"
     depends_on:
       - draws_index
     restart: always
+
+volumes:
+  uv-cache:
