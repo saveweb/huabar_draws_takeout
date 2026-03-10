@@ -45,16 +45,6 @@ if "search_results" in st.session_state:
     } for u in users])
     st.dataframe(df, use_container_width=True)
 
-    options = [u.jid for u in users]
-    selected = st.selectbox(
-        "选择用户",
-        options,
-        format_func=lambda j: next(f"{u.authorname}（{u.notes_count} 作品）" for u in users if u.jid == j),
-    )
-    if st.button("填入导出"):
-        st.session_state["export_jid"] = selected
-        st.success(f"已填入：{selected}")
-
 # ── 导出 ──────────────────────────────────────────────
 st.header("导出备份")
 
@@ -78,7 +68,8 @@ if st.button("开始导出") and jid:
     with st.spinner("下载中（进度见终端）..."):
         asyncio.run(_export())
 
-    post_process(jid)
+    with st.spinner("生成压缩包..."):
+        post_process(jid)
 
     usr_dir = jid.split("@")[0]
     st.success("导出完成！")
