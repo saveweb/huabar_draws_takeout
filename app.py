@@ -43,7 +43,7 @@ if "search_results" in st.session_state:
         "注册时间": format_register_time(u.register_time),
         "JID": u.jid,
     } for u in users])
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width='stretch')
 
 # ── 导出 ──────────────────────────────────────────────
 st.header("导出备份")
