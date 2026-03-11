@@ -9,3 +9,23 @@ services:
     environment:
       - MONGODB_URI=${MONGODB_URI}
     restart: always
+
+  takeout_ui:
+    image: ghcr.io/astral-sh/uv:python3.13-alpine
+    container_name: huabar-takeout-ui
+    working_dir: /app
+    ports:
+      - "127.0.0.63:8501:8501"
+    volumes:
+      - .:/app
+      - uv-cache:/root/.cache/uv
+    environment:
+      - API_BASE=http://draws_index:8080/api/
+    command: sh -c "apk add --no-cache pandoc zip && uv run streamlit run app.py --server.address=0.0.0.0 --server.baseUrlPath=/ui"
+    depends_on:
+      - draws_index
+    restart: always
+    mem_limit: 1G
+
+volumes:
+  uv-cache:
