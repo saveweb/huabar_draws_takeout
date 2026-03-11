@@ -25,6 +25,7 @@ services:
     depends_on:
       - draws_index
     restart: always
+    mem_limit: 1G
 
 volumes:
   uv-cache:
