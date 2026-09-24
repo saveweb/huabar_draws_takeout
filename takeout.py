@@ -14,7 +14,7 @@ from url_type import (
     get_urltype
 )
 
-API_BASE = "http://127.0.0.63:8539/api/"
+API_BASE = os.environ.get("API_BASE", "http://127.0.0.63:8539/api/")
 
 def is_keyable(url: str)->bool:
     if not url:

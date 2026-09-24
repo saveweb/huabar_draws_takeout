@@ -1,10 +1,12 @@
 import asyncio
+import os
+
 import httpx
 from datetime import datetime, timezone, timedelta
 from typing import List
 import csv
 
-API_BASE = "http://127.0.0.63:8539/api/"
+API_BASE = os.environ.get("API_BASE", "http://127.0.0.63:8539/api/")
 
 
 class UserInfo:
