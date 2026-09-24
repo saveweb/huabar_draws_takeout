@@ -155,7 +155,7 @@ func auto_unload_data() {
 }
 
 func search_authorname(q string, limit int, TYPE string) ([]JidAuthorName, error) {
-	var results []JidAuthorName
+	results := make([]JidAuthorName, 0)
 
 	Lock.Lock()
 	defer Lock.Unlock()
